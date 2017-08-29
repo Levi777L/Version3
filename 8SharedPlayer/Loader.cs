@@ -18,13 +18,13 @@ public class Loader : MonoBehaviour
     #region LoadingAsync
 
 
-    public IEnumerator LoadDioAsync(GameManager manager, List<DioramaObjectSaver> dos, Transform attachment)
+    public IEnumerator LoadDioAsync(List<DioramaObjectSaver> dos, Transform attachment)
     {
         loading = true;
 
         for (int i = 0; i < dos.Count; i++)
         {
-           manager.StartCoroutine(RebuildGo(manager, dos[i], attachment, true));
+           StartCoroutine(RebuildGo(dos[i], attachment, true));
             yield return null;
 
         }
@@ -32,7 +32,7 @@ public class Loader : MonoBehaviour
         loading = false;
     }
 
-    IEnumerator RebuildGo(GameManager manager, DioramaObjectSaver dos, Transform transform, bool addCollider = true)
+    IEnumerator RebuildGo(DioramaObjectSaver dos, Transform transform, bool addCollider = true)
     {
         GameObject go = null;
 
@@ -130,137 +130,4 @@ public class Loader : MonoBehaviour
     }
     #endregion
 
-    #region LegacyLoader
-    //public IEnumerator LoadV2(List<DioramaObjectSaver> dos, Transform t)
-    //{
-    //    loading = true;
-        
-    //    //Prewarm all bundles used
-    //    List<BundleItem.BundleNames> allBundles = new List<BundleItem.BundleNames>();
-    //    for (int i = 0; i < dos.Count; i++)
-    //    {
-    //        BundleItem bi = TODV2.GetItemByID(dos[i].todID);
-
-    //        if (bi != null && bi.id > 0 && !bi.loadFromResources)
-    //        {
-    //            if (File.Exists(Globals.BUNDLEPATH + bi.bundle.ToString().ToLower()))
-    //            {
-    //                allBundles.Add(bi.bundle);
-
-    //            }
-    //            else
-    //            {
-    //                loading = false;
-    //                yield break;
-    //            }
-    //        }
-
-    //    }
-    //    allBundles = allBundles.Distinct().ToList();
-    //    int counter = 1;
-    //    foreach (BundleItem.BundleNames BN in allBundles)
-    //    {
-    //        while (!AssetBundleManager.GetAssetBundle(BN).isDone)
-    //        {
-    //            yield return new WaitForSeconds(1);
-    //        }
-    //        counter++;
-    //    }
-
-
-
-    //    //Build each object  (First object is always the diorama transform
-    //    for (int i = 1; i < dos.Count; i++)
-    //    {
-    //        if (dos[i].todID != -1)
-    //        {
-    //            yield return StartCoroutine(RebuildGoLegacy(dos[i], t.transform, true, dos[i].groupNumber));
-    //        }
-    //    }
-
-    //    loading = false;
-
-    //}
-
-    //IEnumerator RebuildGoLegacy(DioramaObjectSaver dos, Transform transform, bool addCollider = true, int thisGroupNumber = 0)
-    //{
-    //    GameObject go;
-    //    Transform groupParent = null;
-
-    //    if (groupParent == null)
-    //        groupParent = transform;
-
-    //    if (dos.todID == -2 )
-    //    {
-
-    //    }
-    //    else if (dos.todID == -1)
-    //    {
-
-    //    }
-    //    else
-    //    {
-    //        BundleItem t = TODV2.GetItemByID(dos.todID);
-
-    //        AssetBundleCreateRequest a = AssetBundleManager.GetAssetBundle(t.BundleName);
-
-    //        while (!a.isDone)
-    //            yield return new WaitForSeconds(1);
-
-    //        AssetBundle ab = a.assetBundle;
-
-    //        if (t.LoadFromResources)
-    //        {
-    //            string path = t.TopFolder.ToString() + @"\";
-    //            path += t.BundleName + @"\" + (t.FolderPath.Replace(",", @"\")) + @"\";
-    //            path += t.prefabName.Replace(".prefab", "");
-    //            go = GameObject.Instantiate(Resources.Load(path, typeof(GameObject))) as GameObject;
-    //        }
-    //        else
-    //        {
-    //            go = MonoBehaviour.Instantiate(ab.LoadAsset(t.PrefabName, typeof(GameObject))) as GameObject;
-    //        }
-
-    //        Common.ReassignTextures(go, t.HasLight);
-
-    //        go.name = "Object";
-    //        go.transform.parent = groupParent;
-    //        go.transform.localPosition = dos.savedPos;
-    //        go.transform.localRotation = dos.savedRot;
-    //        go.transform.localScale = dos.savedScale;
-
-    //        DioramaObject newDio = go.AddComponent<DioramaObject>();
-    //        newDio.todID = dos.todID;
-    //        newDio.savedPos = dos.savedPos;
-    //        newDio.savedRot = dos.savedRot;
-    //        newDio.savedScale = dos.savedScale;
-    //        newDio.groupNumber = thisGroupNumber;
-    //        newDio.gridScale = t.gridScale;
-    //        newDio.layer = dos.layer == 0 ? 1 : dos.layer;
-
-    //        Common.DestroyAll(go);
-
-
-    //        CheckAnimation(go);
-    //        List<CharPose> pose = dos.savedCharPose;
-    //        Transform[] allTrans = go.GetComponentsInChildren<Transform>();
-    //        for (int i = 0; i < allTrans.Count(); i++)
-    //        {
-    //            CharPose next = pose[i];
-    //            allTrans[i].localPosition = next.savedPos;
-    //            allTrans[i].localRotation = next.savedRot;
-    //        }
-
-
-    //        TextMeshPro tmp = go.GetComponentInChildren<TextMeshPro>();
-    //        if (tmp)
-    //        {
-    //            tmp.text = dos.text;
-    //        }
-    //    }
-
-    //}
-
-
-#endregion
 }

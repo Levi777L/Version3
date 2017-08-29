@@ -280,7 +280,7 @@ public class TitleScreenMode : IMode
 
         if (z[selectedZoneID].dos.Count > 0)
         {
-            manager.StartCoroutine(manager.loader.LoadDioAsync(manager, z[selectedZoneID].dos, manager.currentModeParent));
+            manager.StartCoroutine(manager.loader.LoadDioAsync(z[selectedZoneID].dos, manager.currentModeParent));
         }
 
     }

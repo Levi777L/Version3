@@ -76,6 +76,10 @@ public class ScalePanMode : IMode
             startPos = manager.mainPointer.position;
 
             manager.SetToolTip("World Scale: 1/" + manager.rig.transform.localScale.x.ToString("0.0"));
+            if (manager.dioramaScale < 0.5f)
+                manager.dioramaScale = 0.5f;
+            if (manager.dioramaScale > 250f)
+                manager.dioramaScale = 250f;
         }
 
 

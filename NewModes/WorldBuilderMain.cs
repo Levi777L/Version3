@@ -501,7 +501,7 @@ public class WorldBuilderMain : IMode
 
         if (currentZone.dos.Count > 0)
         {       
-            manager.StartCoroutine(manager.loader.LoadDioAsync(manager, currentZone.dos, manager.currentModeParent));
+            manager.StartCoroutine(manager.loader.LoadDioAsync(currentZone.dos, manager.currentModeParent));
         }
 
         manager.Diorama.transform.position = savedPos;

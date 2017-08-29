@@ -306,9 +306,12 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (!workInProgress)
+        SetMoveDioToggle();
+
+
+        if (!loader.LoaderRunning)
         {
-            
+
             if (Time.deltaTime > 0) lastDeltaTime = Time.deltaTime;
 
             RotateTextsToHMD();
@@ -319,8 +322,6 @@ public class GameManager : MonoBehaviour
 
             LookMenuActivate();
             CheckForActiveButton();
-
-            SetMoveDioToggle();
 
             SelectObjectMode.SoftReset();
 
@@ -355,8 +356,13 @@ public class GameManager : MonoBehaviour
             }
             RightDetailText();
         }
-        else {
+        else
+        {
             rightText.text = "Loading";
+            if (moveDio)
+            {
+                ScalePanMode.Instance().IControlUpdate();
+            }
         }
 
         
@@ -840,11 +846,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void ScaleDiorama(float newScale) {
-        if (newScale > 0.5)
-        {
-            rig.transform.localScale = new Vector3(newScale, newScale, newScale);
-            float size = 25;
-        }
+        rig.transform.localScale = new Vector3(newScale, newScale, newScale);
     }
 
     public void ClearZone()
