@@ -279,6 +279,7 @@ public class WorldBuilderMain : IMode
                     TitleScreenMode.Instance().SetupMode();
                     break;
                 case "SPAWNMODE":
+                    SaveWorld();
                     AdventureTester.Instance().SetupMode();
                     manager.SetToolTip("Play Test Mode Activated");
                     break;
