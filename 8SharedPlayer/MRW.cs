@@ -2,12 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MRW {
-
-  public MixedRealityWorld = new MixedRealityWorld();
-    
-}
-
 [Serializable]
 public class MixedRealityWorld {
 
