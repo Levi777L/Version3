@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MRW : Monobehaviour {
+public class MRW {
 
-  [HideInInspector]
   public MixedRealityWorld = new MixedRealityWorld();
     
 }
@@ -46,7 +45,7 @@ public class ViewPoint {
 }
 
 [Serializable]
-public class MRWObject {
+public class MRWObject : Monobehaviour {
 
   [SerializeField]
   public int todID = -1;
