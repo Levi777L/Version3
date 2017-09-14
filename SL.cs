@@ -31,7 +31,7 @@ public static class SL {
                 using(TextWriter tw = new StreamWriter(path))
                 {
                     XmlSerializer x = new XmlSerializer(o.GetType());
-                    x.Serialize(tw. o);
+                    x.Serialize(tw, o);
                 }
                 return;
             }
@@ -59,7 +59,7 @@ public static class SL {
     }
     
     public static void LoadFile<T>(this object o, string path, out T i) {
-        if(Path.GetExtension(Path) == ".xml") {
+        if(Path.GetExtension(path) == ".xml") {
             XmlSerializer x = new XmlSerializer(o.GetType());
             using(TextReader tr = new StreamReader(path)) {
                 o = x.Deserialize(tr);

@@ -17,9 +17,9 @@ public class AdventureTester : IMode
         if (instance == null)
         {
             instance = new AdventureTester();
-            manager = SL.sl.Get<GameManager>();
-            control = SL.sl.Get<IVRControl>();
-            shared = SL.sl.Get<WorldBuilderMain>();
+            manager = SL.Get<GameManager>();
+            control = SL.Get<IVRControl>();
+            shared = SL.Get<WorldBuilderMain>();
         }
         return instance;
     }

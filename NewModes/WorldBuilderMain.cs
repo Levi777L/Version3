@@ -339,9 +339,9 @@ public class WorldBuilderMain : IMode
         if (instance == null)
         {
             instance = new WorldBuilderMain();
-            manager = SL.sl.Get<GameManager>();
-            control = SL.sl.Get<IVRControl>();
-            SL.sl.Add<WorldBuilderMain>(instance);
+            manager = SL.Get<GameManager>();
+            control = SL.Get<IVRControl>();
+            SL.Add<WorldBuilderMain>(instance);
         }
         return instance;
     }

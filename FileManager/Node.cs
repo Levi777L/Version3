@@ -33,7 +33,7 @@ public class Node : MonoBehaviour
 
     public void ActivateNode()
     {
-        SL.sl.Get<FileManagerV2>().NodeAction(fileName, nodeType, this);
+        SL.Get<FileManagerV2>().NodeAction(fileName, nodeType, this);
     }
 
     public void SoftReset() {

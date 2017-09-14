@@ -29,8 +29,8 @@ public class PlaceObjectMode : IMode
         if (instance == null)
         {
             instance = new PlaceObjectMode();
-            manager = SL.sl.Get<GameManager>();
-            control = SL.sl.Get<IVRControl>();
+            manager = SL.Get<GameManager>();
+            control = SL.Get<IVRControl>();
         }
         return instance;
     }

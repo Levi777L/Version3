@@ -113,10 +113,10 @@ public class KeyboardMode : IMode
         if (instance == null)
         {
             instance = new KeyboardMode();
-            manager = SL.sl.Get<GameManager>();
-            control = SL.sl.Get<IVRControl>();
-            shared = SL.sl.Get<WorldBuilderMain>();
-            keyboard = SL.sl.Get<Keyboard>();
+            manager = SL.Get<GameManager>();
+            control = SL.Get<IVRControl>();
+            shared = SL.Get<WorldBuilderMain>();
+            keyboard = SL.Get<Keyboard>();
         }
         return instance;
     }

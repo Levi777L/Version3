@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
 [Serializable]
@@ -22,7 +25,7 @@ public class MixedRealityWorld {
   public void Save() {
         string path = Globals.WORLDPATH;
         path += name + ".mrw";
-
+        string worldName = "Test";
         try
         {
           current.Save();
@@ -30,21 +33,21 @@ public class MixedRealityWorld {
             {
                 new BinaryFormatter().Serialize(stream, (object)this);
                 File.WriteAllBytes(path, stream.ToArray());
-                File.WriteAllBytes(Globals.BACKUPS + currentWorld.name + " " + DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd hh-mm-ss") + ".mrw", stream.ToArray());
+                File.WriteAllBytes(Globals.BACKUPS + worldName + " " + DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd hh-mm-ss") + ".mrw", stream.ToArray());
             }
         }
         catch {
-            manager.SetToolTip("Save Failed");
+            //manager.SetToolTip("Save Failed");
         }
         
         //Get manager from SL
-        manager.SetToolTip(currentWorld.name + " Successfully Saved at " + DateTime.Now.ToString("hh:mm:ss"));
-        manager.lastSaveTime = DateTime.Now;
+        //manager.SetToolTip(currentWorld.name + " Successfully Saved at " + DateTime.Now.ToString("hh:mm:ss"));
+        //manager.lastSaveTime = DateTime.Now;
   }
 }
 
 [Serializable]
-public class Diorama : Monobehaviour { //This goes on the base
+public class Diorama : MonoBehaviour { //This goes on the base
   
   public Diorama(int id) {
     this.id = id;
@@ -61,20 +64,20 @@ public class Diorama : Monobehaviour { //This goes on the base
   public List<MRWObject> objects = new List<MRWObject>();
   
   [SerializeField]
-  public List<ViewPoint> viewpoints = new List<ViewPoint>();
+  public List<MRWViewPoint> viewpoints = new List<MRWViewPoint>();
   
   public void Save() {
-    objects = FindComponentsInChildren<MRWObject>().ToList();
+    objects = GetComponentsInChildren<MRWObject>().ToList();
   }
   
-  public void AddViewpoint(ViewPoint v) {
+  public void AddViewpoint(MRWViewPoint v) {
     viewpoints.Add(v);
   }
   
 }
 
 [Serializable]
-public class ViewPoint {
+public class MRWViewPoint {
 
   [SerializeField]
   public SerializableVector3 relativePos;
@@ -88,13 +91,13 @@ public class ViewPoint {
 }
 
 [Serializable]
-public class MRWObject : Monobehaviour { //This goes on each object
+public class MRWObject : MonoBehaviour { //This goes on each object
 
   [SerializeField]
   public int todID = -1;
   
   [SerializeField]
-  pulbic int uniqueID = -1;
+  public int uniqueID = -1;
   
   [SerializeField]
   public SerializableVector3 savedLocalPos;

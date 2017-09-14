@@ -18,8 +18,8 @@ public class PoserMode : IMode
         if (instance == null)
         {
             instance = new PoserMode();
-            manager = SL.sl.Get<GameManager>();
-            control = SL.sl.Get<IVRControl>();
+            manager = SL.Get<GameManager>();
+            control = SL.Get<IVRControl>();
             poserWidget = manager.poserWidget;
         }
         return instance;

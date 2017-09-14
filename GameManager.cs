@@ -251,16 +251,16 @@ public class GameManager : MonoBehaviour
             AssetBundleManager.Prewarm();
         }
 
-        SL.sl.Add<GameManager>(this);
-        SL.sl.Add<Keyboard>(keyboard);
+        SL.Add<GameManager>(this);
+        SL.Add<Keyboard>(keyboard);
         
         hmd = rig.GetComponent<IVRHmd>();
         hmd.Init();
-        SL.sl.Add<IVRHmd>(hmd);
+        SL.Add<IVRHmd>(hmd);
 
         control = rig.GetComponent<IVRControl>();
         control.Init(this);
-        SL.sl.Add<IVRControl>(control);
+        SL.Add<IVRControl>(control);
 
         poserWidget.SetActive(false);
 
@@ -280,7 +280,7 @@ public class GameManager : MonoBehaviour
         }
 
         activeFM.Init(this);
-        SL.sl.Add<FileManagerV2>(activeFM);
+        SL.Add<FileManagerV2>(activeFM);
 
         SetPrefs();
         DeactivateStarter();
