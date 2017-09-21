@@ -1,0 +1,60 @@
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+[Serializable]
+public class TempItem { public int key; public int value; }
+
+public static class VRFileManager {
+
+  public static Dictionary<int, string> allFiles = new Dictionary<int, string>();
+  
+  static VRFileManager {
+    string path = ""; //Database File Path
+    
+    List<TempItem> temp = new List<TempItem>();
+    SaveLoad.TryLoad(ref temp, path);
+    foreach(TempItem t in temp) {
+      allFiles.Add(t.key, t.value);
+    }
+    temp.Clear();
+    
+    if(Application.isEditor)
+    {
+      //Get All Files, TO DO Add resource path, strip resource path)
+      string[] files = Dictionary.GetFiles("", "*.prefab", SearchOption.AllDirectories);
+      
+      //Add new files
+      foreach(string s in files){
+        if(!allFiles.ContainsValue(s)) {
+          allFiles.Add(allFiles.Count + 1, s);
+        }
+      }
+      
+      //Find all files to remove
+      List<int> removes = new List<int>();
+      foreach (var v in allFiles) {
+        if(!files.Contains(v.Value)) {
+          removes.Add(v.Key);
+        }
+      }
+      
+      //Remove Files
+      foreach(int i in removes) {
+        allFiles.Remove(i);
+      }
+      
+      //Save
+      foreach(var v in allFiles)
+      {
+        var t = new TempItem();
+        t.key = v.Key;
+        t.value = v.Value;
+        temp.Add(t);
+      }
+      temp.SaveFile(path);
+      temp.Clear();
+      
+    }
+  }
+}
