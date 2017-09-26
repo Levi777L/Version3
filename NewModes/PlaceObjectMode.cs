@@ -10,8 +10,6 @@ public class PlaceObjectMode : IMode
     private static GameManager manager;
     private static IVRControl control;
 
-    private static bool poseable = false;
-
     private static float savedAniFrame = 0f;
 
 
@@ -23,6 +21,12 @@ public class PlaceObjectMode : IMode
         RotLock,
     }
 
+    private static HeldObjectType hot = HeldObjectType.Normal;
+    public enum HeldObjectType {
+        Chat,
+        Poseable,
+        Normal,
+    }
 
     public static PlaceObjectMode Instance()
     {
@@ -46,13 +50,19 @@ public class PlaceObjectMode : IMode
         manager.mode = instance;
 
         manager.mainPointer.GetComponent<Renderer>().enabled = false;
-        poseable = WorldBuilderMain.selectedBI.HasAnimation;
 
-        if (poseable)
+        if (WorldBuilderMain.selectedObject.GetComponentInChildren<MRWChat>())
         {
+            hot = HeldObjectType.Chat;
+        }
+        else if (WorldBuilderMain.selectedObject.GetComponentInChildren<MRWPose>())
+        {
+            hot = HeldObjectType.Poseable;
             manager.controlList.text = Globals.PLACE_CONTROL_2;
         }
-        else {
+        else
+        {
+            hot = HeldObjectType.Normal;
             manager.controlList.text = Globals.PLACE_CONTROL;
         }
     }
@@ -77,41 +87,27 @@ public class PlaceObjectMode : IMode
     {
         manager.modeStringEnum = GameManager.ModeString.Place_Object;
 
-        if (control.RB() && !poseable)
+        switch (hot)
         {
-            StampCopy();
-            return;
+            case HeldObjectType.Chat:
+                IControlUpdateChat();
+                break;
+            case HeldObjectType.Poseable:
+                IControlUpdatePose();
+                break;
+            default:
+                IControlUpdateNormal();
+                break;
         }
 
-        if (control.RB() && poseable) {
-            PoserMode.Instance().SetupMode();
-            return;
-        }
-        
         if (control.LB())
         {
             DestroySelectedObject();
             return;
         }
 
-        if (control.RB2()) {
-            DropObject();
-            return;
-        }
-
-        if (!poseable && control.RHR())
+        if (control.LB2())
         {
-            RotateObjectCW();
-            return;
-        }
-
-        if (!poseable && posLock == PosLock.Grid && control.RHL())
-        {
-            RotateObjectCCW();
-            return;
-        }
-
-        if (control.LB2()) {
             UndoPickup();
             return;
         }
@@ -120,7 +116,67 @@ public class PlaceObjectMode : IMode
             UpdateScale();  
         }
 
+    }
+
+    private void IControlUpdateNormal() {
+        if (control.RB())
+        {
+            StampCopy();
+            return;
+        }
+        
+        if (control.RB2())
+        {
+            DropObject();
+            return;
+        }
+
+        if (control.RHR())
+        {
+            RotateObjectCW();
+            return;
+        }
+
+        if (control.RHL())
+        {
+            RotateObjectCCW();
+            return;
+        }
+    }
+
+    private void IControlUpdatePose()
+    {
         AnimFramSelect();
+
+        if (control.RB())
+        {
+            DropObject();
+            PoserMode.Instance().SetupMode();
+            return;
+        }
+        
+        if (control.RB2())
+        {
+            DropObject();
+            return;
+        }
+    }
+
+    private void IControlUpdateChat()
+    {
+        UpdateChatColor();
+
+        if (control.RB())
+        {
+            StampCopy();
+            return;
+        }
+
+        if (control.RB2())
+        {
+            DropObject();
+            return;
+        }
     }
 
     private void UpdateRotation()
@@ -221,18 +277,11 @@ public class PlaceObjectMode : IMode
 
     private void StampCopy()
     {
-        TextMeshPro tmp = WorldBuilderMain.selectedObject.GetComponentInChildren<TextMeshPro>();
-        if (tmp)
-        {
-            DropObject();
-            return;
-        }
-
-        LowPolyWaterScript lpws = WorldBuilderMain.selectedObject.GetComponentInChildren<LowPolyWaterScript>();
-        if (lpws != null)
-        {
-            //lpws.sun = manager.dioramaLight.GetComponent<Light>();
-        }
+        //LowPolyWaterScript lpws = WorldBuilderMain.selectedObject.GetComponentInChildren<LowPolyWaterScript>();
+        //if (lpws != null)
+        //{
+        //    //lpws.sun = manager.dioramaLight.GetComponent<Light>();
+        //}
 
         GameObject go = Common.CopyGo(WorldBuilderMain.selectedObject, new Vector3(WorldBuilderMain.objectScale, WorldBuilderMain.objectScale, WorldBuilderMain.objectScale), manager.currentModeParent, false, false);
         DioramaObject d = go.GetComponent<DioramaObject>();
@@ -299,29 +348,43 @@ public class PlaceObjectMode : IMode
         WorldBuilderMain.selectedObject.transform.localRotation *= Quaternion.Euler(new Vector3(0, -90, 0));
     }
 
-    private void AnimFramSelect() {
-        if (poseable)
-        {
-            Animator myAnimator = WorldBuilderMain.selectedObject.GetComponent<Animator>();
-            if (myAnimator)
-            {
-                var test = myAnimator.GetCurrentAnimatorClipInfo(0);
-                savedAniFrame += ((manager.lastDeltaTime / test[0].clip.length) * 3 * control.RHX() * Mathf.Abs(control.RHX()));
-                if (savedAniFrame > 1)
-                {
-                    savedAniFrame = 0;
-                }
-                else if (savedAniFrame < 0)
-                {
-                    savedAniFrame = 1f;
-                }
+    private void UpdateChatColor() {
+        Renderer[] allRend = WorldBuilderMain.selectedObject.GetComponentsInChildren<Renderer>();
+        MRWChat c = WorldBuilderMain.selectedObject.GetComponentInChildren<MRWChat>();
 
-                myAnimator.speed = 0;
-                myAnimator.Play(myAnimator.GetCurrentAnimatorStateInfo(0).fullPathHash, 0, savedAniFrame);
-                return;
+        foreach (Renderer renderer in allRend)
+        {
+            if (renderer.material.name.Substring(0,4) == "Fire")
+            {
+                c.ColorShift += (manager.lastDeltaTime * (control.RHX() * Mathf.Abs(control.RHX())) * 50);
+                renderer.material.SetFloat("_HueShift", (int)c.ColorShift);
+                //manager.SetToolTip(c.ColorShift.ToString("0"));
             }
         }
     }
-   
+
+    private void AnimFramSelect()
+    {
+        Animator myAnimator = WorldBuilderMain.selectedObject.GetComponent<Animator>();
+        if (myAnimator)
+        {
+            var test = myAnimator.GetCurrentAnimatorClipInfo(0);
+            savedAniFrame += ((manager.lastDeltaTime / test[0].clip.length) * 3 * control.RHX() * Mathf.Abs(control.RHX()));
+            if (savedAniFrame > 1)
+            {
+                savedAniFrame = 0;
+            }
+            else if (savedAniFrame < 0)
+            {
+                savedAniFrame = 1f;
+            }
+
+            myAnimator.speed = 0;
+            myAnimator.Play(myAnimator.GetCurrentAnimatorStateInfo(0).fullPathHash, 0, savedAniFrame);
+            return;
+        }
+
+    }
+
 
 }

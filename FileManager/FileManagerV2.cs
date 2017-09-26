@@ -9,6 +9,42 @@ using TMPro;
 
 public class FileManagerV2 : MonoBehaviour
 {
+    private static List<List<string>> AllFiles = new List<List<string>>();
+    private static List<string> CurrentPath = new List<string>();
+    private static Dictionary<int, string> ALLFILES;
+
+    private void InitList() {
+        ALLFILES = new Dictionary<int, string>();
+
+        if (Application.isEditor)
+        {
+            string[] files = Directory.GetFiles(Application.dataPath + @"\Resources\", "*.prefab", SearchOption.AllDirectories);
+            //foreach (string s in files) AllFiles.Add(s.Replace(Application.dataPath + @"\Resources\", "").Replace(@"\", ",").Split(',').ToList());
+            foreach (string s in files) ALLFILES.Add(ALLFILES.Count, s.Replace(Application.dataPath + @"\Resources\", ""));
+            ALLFILES.SaveFile(Application.dataPath + @"\test.xml");
+        }
+    }
+
+    private void OpenPathByLevel(int level)
+    {
+        AllNodeStrings.Clear();
+
+        foreach (List<string> subList in AllFiles) {
+            if (subList.Count > level) {
+                for (int i = 0; i < level; i++)
+                {
+                    if (subList[i] != CurrentPath[i])
+                    {
+                        continue;
+                    }
+                }
+            }
+        }
+
+        AllNodeStrings = AllNodeStrings.Distinct().ToList();
+        ResetCurrentPage();
+        BuildNodes();
+    }
 
     private GameManager manager;
     private IVRControl control;
@@ -57,6 +93,9 @@ public class FileManagerV2 : MonoBehaviour
     // Use this for initialization
     private void Awake()
     {
+        InitList();
+        
+
         for (int i = 0; i < 9; i++)
         {
             nodes[i].SetActive(true);
@@ -316,6 +355,7 @@ public class FileManagerV2 : MonoBehaviour
         BuildNodes();
 
     }
+    
 
     private void OpenBundle(string filename, bool forward = true)
     {
